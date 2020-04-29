@@ -84,7 +84,7 @@ class PrivateTagsApiTests(TestCase):
     def test_retrive_tags_assigned_to_recipes(self):
         """Test filtering tags by those assigned to recipes"""
         tag1 = Tag.objects.create(user=self.user, name='Breakfast')
-        # tag2 = Tag.objects.create(user=self.user, name='Lunch')
+        tag2 = Tag.objects.create(user=self.user, name='Lunch')
         recipe = Recipe.objects.create(
             title='Coriander eggs on toast',
             time_minutes=10,
@@ -96,14 +96,14 @@ class PrivateTagsApiTests(TestCase):
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
 
         serializer1 = TagSerializer(tag1)
-        # serializer2 = TagSerializer(tag2)
+        serializer2 = TagSerializer(tag2)
         self.assertIn(serializer1.data, res.data)
-        # self.assertNotIn(serializer2.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
 
     def test_retrive_tags_assigned_unique(self):
         """Test filtering tags by assigned returns unique items"""
         tag = Tag.objects.create(user=self.user, name='Breakfast')
-        # Tag.objects.create(user=self.user, name='Lunch')
+        Tag.objects.create(user=self.user, name='Lunch')
         recipe1 = Recipe.objects.create(
             title='Pancakes',
             time_minutes=5,
@@ -111,6 +111,7 @@ class PrivateTagsApiTests(TestCase):
             user=self.user
         )
         recipe1.tags.add(tag)
+
         recipe2 = Recipe.objects.create(
             title='Porridge',
             time_minutes=3,
